@@ -1,152 +1,162 @@
-import React from 'react';
-import { 
-  Home, 
-  Settings, 
-  Mail, 
-  Plus, 
-  FileText, 
-  Calendar, 
-  CheckCircle, 
-  MoreVertical,
+import { useState, useRef, useLayoutEffect } from "react";
+import {
+  LayoutDashboard,
+  Settings,
+  Files,
+  Users,
   Layers,
-  Search,
-  MessageSquare
-} from 'lucide-react';
+  HardDrive,
+  ChevronDown,
+  Home,
+  BarChart2,
+  HelpCircle,
+} from "lucide-react";
 
-// --- Configuration Data ---
-const leftTopItems = [
-  { icon: Home, id: 'home' },
-  { icon: Layers, id: 'layers' },
-  { icon: Search, id: 'search' },
-];
-
-const leftBottomItems = [
-  { icon: Settings, id: 'settings' },
-  { icon: MoreVertical, id: 'more' },
-];
-
-const navItems = [
+const SIDEBAR_ITEMS = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, type: "page" },
   {
-    icon: Mail,
-    label: "Messages",
-    actionIcon: Plus,
-    submenu: [
-      { label: "Drafts", count: 10 },
-      { label: "Scheduled", count: 4 },
-      { label: "Published", count: 20 },
+    id: "files",
+    label: "Files",
+    icon: Layers,
+    type: "submenu",
+    children: [
+      { id: "active", label: "Active" },
+      { id: "completed", label: "Completed" },
+      { id: "archived", label: "Archived" },
     ],
   },
+  { id: "team", label: "Team", icon: Users, type: "page" },
   {
-    icon: Layers,
-    label: "Analytics",
-    submenu: null
-  }
+    id: "MyDisk",
+    label: "MyDisk",
+    icon: HardDrive,
+    type: "submenu",
+    children: [
+      { id: "reports", label: "Reports" },
+      { id: "logs", label: "Logs" },
+    ],
+  },
+  { id: "settings", label: "Settings", icon: Settings, type: "page" },
+  { id: "help", label: "Help", icon: HelpCircle, type: "page" },
 ];
 
-// --- Sub-Components ---
+const SubMenu = ({ isOpen, items, activeItem, onClick }) => {
+  const ref = useRef(null);
+  const [height, setHeight] = useState(0);
 
-const IconButton = ({ Icon, className = "" }) => (
-  <button className={`w-11 h-11 grid place-items-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-800 transition-colors ${className}`}>
-    <Icon size={22} strokeWidth={1.5} />
-  </button>
-);
+  useLayoutEffect(() => {
+    if (ref.current) {
+      setHeight(isOpen ? ref.current.scrollHeight : 0);
+    }
+  }, [isOpen]);
 
-const SidebarHeader = () => (
-  <div className="flex items-center justify-between p-4 mb-2">
-    <div>
-      <h2 className="text-base font-bold text-slate-800 leading-tight">Untitled UI</h2>
-      <h3 className="text-xs font-medium text-slate-400">store.untitledui.com</h3>
-    </div>
-    <MoreVertical size={18} className="text-slate-400 cursor-pointer" />
-  </div>
-);
-
-const Submenu = ({ items }) => (
-  <ul className="relative ml-8 pl-4 border-l border-slate-200 space-y-1 my-1">
-    {items.map((item, idx) => (
-      <li 
-        key={idx} 
-        className="flex items-center justify-between h-9 px-3 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-200/50 hover:text-slate-800 cursor-pointer transition-colors"
-      >
-        <span>{item.label}</span>
-        {item.count && (
-          <span className="text-xs bg-white border border-slate-200 px-1.5 py-0.5 rounded-md text-slate-600 font-semibold">
-            {item.count}
-          </span>
-        )}
-      </li>
-    ))}
-  </ul>
-);
-
-const NavItem = ({ item }) => (
-  <div className="mb-2">
-    <button className="w-full flex items-center gap-3 px-3 h-11 rounded-lg text-slate-500 hover:bg-slate-200/50 hover:text-slate-800 transition-all group/item">
-      <item.icon size={18} />
-      <span className="flex-1 text-left text-sm font-medium">{item.label}</span>
-      {item.actionIcon && (
-        <item.actionIcon 
-          size={16} 
-          className="opacity-0 group-hover/item:opacity-100 transition-opacity" 
-        />
-      )}
-    </button>
-    
-    {item.submenu && <Submenu items={item.submenu} />}
-  </div>
-);
-
-// --- Main Components ---
-
-const LeftSidebar = () => (
-  <div className="absolute left-0 top-0 bottom-0 w-[80px] bg-white z-20 flex flex-col items-center py-6 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
-    {/* Logo Area */}
-    <div className="mb-8">
-      <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold">
-        UI
-      </div>
-    </div>
-
-    {/* Top Icons */}
-    <div className="flex flex-col gap-2">
-      {leftTopItems.map((item) => (
-        <IconButton key={item.id} Icon={item.icon} />
-      ))}
-    </div>
-
-    {/* Spacer */}
-    <div className="flex-1" />
-
-    {/* Bottom Icons */}
-    <div className="flex flex-col gap-2 pb-4">
-      {leftBottomItems.map((item) => (
-        <IconButton key={item.id} Icon={item.icon} />
-      ))}
-    </div>
-  </div>
-);
-
-const RightSidebar = () => (
-  <div className="absolute inset-y-2 left-[76px] right-2 bg-[#f4f6fa] rounded-xl p-2 pl-6 overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75">
-    <div className="h-full w-[200px] flex flex-col"> {/* Fixed width container to prevent text wrap animation jank */}
-      <SidebarHeader />
-      <nav className="flex-1 overflow-y-auto mt-2">
-        {navItems.map((item) => (
-          <NavItem key={item.label} item={item} />
+  return (
+    <div
+      className="overflow-hidden transition-[height] duration-300"
+      style={{ height }}
+    >
+      <ul ref={ref} className="mt-1">
+        {items.map((item) => (
+          <li key={item.id}>
+            <button
+              onClick={() => onClick(item.id)}
+              className={`relative flex h-11 w-full items-center pl-12 text-sm
+                ${
+                  activeItem === item.id
+                    ? "text-slate-900"
+                    : "text-slate-500 hover:text-slate-800"
+                }
+                before:absolute before:left-[22px] before:top-1/2
+                before:h-1.5 before:w-1.5 before:-translate-y-1/2
+                before:rounded-full
+                ${
+                  activeItem === item.id
+                    ? "before:bg-indigo-600"
+                    : "before:bg-slate-300"
+                }
+              `}
+            >
+              {item.label}
+            </button>
+          </li>
         ))}
-      </nav>
+      </ul>
     </div>
-  </div>
-);
-
-// --- Exported Component ---
+  );
+};
 
 export default function Sidebar() {
+  const [activeItem, setActiveItem] = useState("dashboard");
+  const [openSubmenu, setOpenSubmenu] = useState(null);
+
   return (
-    // The container
-    <aside className="group fixed top-6 left-5 bottom-7 w-[80px] hover:w-[300px] bg-white rounded-[18px] transition-[width] duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1.0)] shadow-2xl overflow-hidden z-50">
-      <LeftSidebar />
-      <RightSidebar />
+    <aside
+      className="
+        fixed left-6 top-6 bottom-6 w-[220px]
+        rounded-2xl
+        bg-white/80 backdrop-blur-xl
+        border border-slate-200/60
+        shadow-2xl
+        px-5 py-4 z-50
+      "
+    >
+      {/* Header */}
+      <div className="flex h-[70px] items-center gap-3 border-b border-slate-200 pb-2">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white font-semibold">
+          <Home size={18} />
+        </div>
+        <span className="text-lg font-semibold text-slate-800">
+          Brand
+        </span>
+      </div>
+
+      {/* Navigation */}
+      <ul className="mt-4 space-y-1">
+        {SIDEBAR_ITEMS.map((item) => {
+          const Icon = item.icon;
+          const open = openSubmenu === item.id;
+
+          return (
+            <li key={item.id}>
+              <button
+                onClick={() =>
+                  item.type === "page"
+                    ? setActiveItem(item.id)
+                    : setOpenSubmenu(open ? null : item.id)
+                }
+                className="
+                  flex h-12 w-full items-center gap-3 rounded-md px-4
+                  text-slate-600 hover:text-slate-900
+                  hover:bg-slate-200/50 transition
+                "
+              >
+                <Icon size={20} />
+                <span className="text-sm font-medium">
+                  {item.label}
+                </span>
+
+                {item.type === "submenu" && (
+                  <ChevronDown
+                    size={16}
+                    className={`ml-auto transition-transform ${
+                      open ? "rotate-180" : ""
+                    }`}
+                  />
+                )}
+              </button>
+
+              {item.type === "submenu" && (
+                <SubMenu
+                  isOpen={open}
+                  items={item.children}
+                  activeItem={activeItem}
+                  onClick={setActiveItem}
+                />
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </aside>
   );
 }

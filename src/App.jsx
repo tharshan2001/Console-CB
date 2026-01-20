@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import ConsoleLayout from "./layout/ConsoleLayout";
 import LoginPage from "./components/LoginPage";
+import UserProfile from "./components/UserProfile";
 
 function App() {
   const checkAuth = useAuthStore((s) => s.checkAuth);
@@ -29,16 +30,18 @@ function App() {
 
         {/* Protected console layout */}
         <Route
-          path="/console"
+          path="/console/*"
           element={
             <ProtectedRoute>
               <ConsoleLayout />
             </ProtectedRoute>
           }
         >
-               {/* /console */}
-          {/* /console/files */}
-          {/* Add more nested pages here */}
+          {/* Default nested route: /console */}
+          <Route index element={<UserProfile />} />
+
+          {/* Example nested route: /console/files */}
+          {/* <Route path="files" element={<FilesPage />} /> */}
         </Route>
 
         {/* Redirect unknown routes */}

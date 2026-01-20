@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 export const useAuthStore = create((set) => ({
   isAuthenticated: false,
+  user: null, // store user object
   loading: true,
 
   checkAuth: async () => {
@@ -10,9 +11,20 @@ export const useAuthStore = create((set) => ({
         credentials: "include",
       });
 
-      set({ isAuthenticated: res.ok });
+      if (!res.ok) throw new Error("Not authenticated");
+
+      const data = await res.json(); // { message: "id: 2, name: Anton, email: aptharshan@gmail.com, apiKey: ..." }
+
+      // Parse the message string into an object
+      const userData = {};
+      data.message.split(',').forEach(pair => {
+        const [key, value] = pair.split(':').map(s => s.trim());
+        userData[key] = value;
+      });
+
+      set({ isAuthenticated: true, user: userData });
     } catch {
-      set({ isAuthenticated: false });
+      set({ isAuthenticated: false, user: null });
     } finally {
       set({ loading: false });
     }
@@ -28,7 +40,19 @@ export const useAuthStore = create((set) => ({
 
     if (!res.ok) throw new Error("Login failed");
 
-    set({ isAuthenticated: true });
+    // After login, fetch user details
+    const meRes = await fetch("http://localhost:8090/auth/me", {
+      credentials: "include",
+    });
+    const meData = await meRes.json();
+
+    const userData = {};
+    meData.message.split(',').forEach(pair => {
+      const [key, value] = pair.split(':').map(s => s.trim());
+      userData[key] = value;
+    });
+
+    set({ isAuthenticated: true, user: userData });
   },
 
   logout: async () => {
@@ -36,6 +60,6 @@ export const useAuthStore = create((set) => ({
       credentials: "include",
     });
 
-    set({ isAuthenticated: false });
+    set({ isAuthenticated: false, user: null });
   },
 }));
