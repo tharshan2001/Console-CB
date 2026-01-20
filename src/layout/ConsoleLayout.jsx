@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 
 export default function ConsoleLayout() {
   // Lock body scroll
@@ -19,8 +20,12 @@ export default function ConsoleLayout() {
       {/* Sidebar */}
       <Sidebar />
 
+      <div className="ml-56 px-1 pt-1 relative z-10">
+        <Header />
+      </div>
+
       {/* Page Content */}
-      <main className="ml-[250px] min-h-screen p-5 relative z-10">
+      <main className="ml-[250px] min-h-screen p-5 px-1 relative z-10">
         <Outlet />
       </main>
     </>

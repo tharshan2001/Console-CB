@@ -4,7 +4,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import ConsoleLayout from "./layout/ConsoleLayout";
 import LoginPage from "./components/LoginPage";
-import UserProfile from "./components/UserProfile";
+import ProductHero from "./components/ProductHero";
+import ProfileMenu from "./components/ProfileMenu";
 
 function App() {
   const checkAuth = useAuthStore((s) => s.checkAuth);
@@ -25,26 +26,23 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public route */}
+        {/* Public */}
         <Route path="/login" element={<LoginPage />} />
 
-        {/* Protected console layout */}
+        {/* Protected */}
         <Route
-          path="/console/*"
+          path="/console"
           element={
             <ProtectedRoute>
               <ConsoleLayout />
             </ProtectedRoute>
           }
         >
-          {/* Default nested route: /console */}
-          <Route index element={<UserProfile />} />
-
-          {/* Example nested route: /console/files */}
-          {/* <Route path="files" element={<FilesPage />} /> */}
+          <Route index element={<ProductHero />} />
+          <Route path="files/active" element={<ProfileMenu />} />
         </Route>
 
-        {/* Redirect unknown routes */}
+        {/* Fallback */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
