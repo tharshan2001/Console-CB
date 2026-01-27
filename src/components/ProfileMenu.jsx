@@ -17,16 +17,24 @@ const ProfileMenu = () => {
   }, []);
 
   return (
-    <div className="relative" ref={ref}>
+    // Full page height
+    <div className="min-h-screen relative p-4" ref={ref}>
       {/* Profile Icon */}
-      <button onClick={() => setOpen(!open)}>
-        <UserCircle className="w-5 h-5 text-gray-600 hover:text-black" />
+      <button
+        onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        aria-controls="profile-menu-popover"
+        className="p-1"
+      >
+        <UserCircle className="w-8 h-8 text-gray-600 hover:text-black" />
       </button>
 
       {/* Popover */}
       {open && (
-        <div className="absolute right-0 mt-3 w-64 bg-white border rounded-xl shadow-lg p-3 z-50">
-          
+        <div
+          id="profile-menu-popover"
+          className="absolute right-4 mt-3 w-64 bg-white border rounded-xl shadow-lg p-3 z-50"
+        >
           {/* User Info */}
           <div className="mb-3">
             <p className="font-semibold text-sm">Anton Tharshan</p>
@@ -58,6 +66,15 @@ const ProfileMenu = () => {
           </div>
         </div>
       )}
+
+      {/* Long content to test scrolling */}
+      <div className="mt-4 space-y-6">
+        {Array.from({ length: 30 }).map((_, i) => (
+          <p key={i} className="text-6xl font-bold">
+            Hii
+          </p>
+        ))}
+      </div>
     </div>
   );
 };

@@ -1,52 +1,17 @@
-import { useEffect } from "react";
-import { useAuthStore } from "./store/useAuthStore";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import ProtectedRoute from "./routes/ProtectedRoute";
-import ConsoleLayout from "./layout/ConsoleLayout";
-import LoginPage from "./components/LoginPage";
-import ProductHero from "./components/ProductHero";
-import ProfileMenu from "./components/ProfileMenu";
+import React from "react";
 
-function App() {
-  const checkAuth = useAuthStore((s) => s.checkAuth);
-  const loading = useAuthStore((s) => s.loading);
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Checking authentication...</p>
-      </div>
-    );
-  }
-
+export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public */}
-        <Route path="/login" element={<LoginPage />} />
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-2xl font-bold mb-4">Custom Scrollbar Demo</h1>
 
-        {/* Protected */}
-        <Route
-          path="/console"
-          element={
-            <ProtectedRoute>
-              <ConsoleLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<ProductHero />} />
-          <Route path="files/active" element={<ProfileMenu />} />
-        </Route>
-
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    </BrowserRouter>
+      <div className="overflow-y-scroll scrollbar-custom border rounded-lg p-4 bg-white">
+        {Array.from({ length: 50 }).map((_, i) => (
+          <p key={i} className="mb-2 text-gray-900">
+            Line #{i + 1} — scroll me!
+          </p>
+        ))}
+      </div>
+    </div>
   );
 }
-
-export default App;
