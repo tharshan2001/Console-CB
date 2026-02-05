@@ -2,15 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Cloud,
-  LayoutGrid,
-  Folder,
-  Users,
-  History,
-  Star,
-  Archive,
-} from "lucide-react";
+import { Cloud, LayoutGrid, Folder, Users, History, Star, Archive } from "lucide-react";
 
 const menuItems = [
   { name: "Dashboard", icon: LayoutGrid, path: "/" },
@@ -21,11 +13,13 @@ const menuItems = [
   { name: "Archive", icon: Archive, path: "/archive" },
 ];
 
-export default function AppSidebar() {
+export default function AppSidebar({ className = "" }) {
   const pathname = usePathname();
 
   return (
-    <aside className="h-screen w-24 bg-white border-r border-zinc-100 flex flex-col items-center py-8">
+    <aside
+      className={`h-screen w-24 flex-shrink-0 bg-white border-r border-zinc-100 flex flex-col items-center py-8 ${className}`}
+    >
       <div className="mb-10">
         <div className="bg-blue-50 p-2.5 rounded-2xl">
           <Cloud size={22} className="text-blue-500" />
@@ -40,10 +34,9 @@ export default function AppSidebar() {
               <Link
                 href={item.path}
                 className={`group flex items-center justify-center rounded-2xl transition-all
-                  ${
-                    isActive
-                      ? "bg-blue-500 text-white p-3 shadow-sm shadow-blue-200/60"
-                      : "text-zinc-400 hover:text-blue-500 hover:bg-blue-50 p-2.5"
+                  ${isActive
+                    ? "bg-blue-500 text-white p-2.5 shadow-sm shadow-blue-200/60"
+                    : "text-zinc-400 hover:text-blue-500 hover:bg-blue-50 p-2.5"
                   }`}
               >
                 <item.icon

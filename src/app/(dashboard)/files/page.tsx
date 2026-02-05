@@ -1,65 +1,42 @@
-import { cookies } from 'next/headers';
-import CubeDashboard from '@/components/CubeDashboard';
+import { cookies } from "next/headers";
+import CubeLayout from "@/layouts/CubeLayout";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8090';
-const CUBES_ENDPOINT = '/api/cubes';
+export default async function CubePage() {
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore.toString();
 
-interface Cube {
-  id: string;
-  name: string;
-  apiKey: string;
-  createdAt?: string;
-}
-
-async function fetchCubes(cookieHeader: string): Promise<Cube[]> {
-  const response = await fetch(`${API_BASE_URL}${CUBES_ENDPOINT}`, {
-    method: 'GET',
-    headers: {
-      Cookie: cookieHeader,
-      'Content-Type': 'application/json',
-    },
-    cache: 'no-store',
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch cubes: ${response.status} ${response.statusText}`);
-  }
-
-  return response.json();
-}
-
-function ErrorState({ title, description }: { title: string; description: string }) {
-  return (
-    <div className="flex h-screen items-center justify-center bg-slate-50 p-4">
-      <div className="w-full max-w-md rounded-xl border border-red-200 bg-white p-8 shadow-lg">
-        <h1 className="text-2xl font-bold text-red-600">{title}</h1>
-        <p className="mt-2 text-sm text-slate-600">{description}</p>
-      </div>
-    </div>
-  );
-}
-
-export default async function FilesPage() {
   try {
-    const cookieStore = await cookies();
-    const cookieHeader = cookieStore.toString();
+    const res = await fetch("http://localhost:8090/api/cubes", {
+      headers: {
+        Cookie: cookieHeader,
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
 
-    const cubes = await fetchCubes(cookieHeader);
+    if (!res.ok) {
+      return (
+        <div className="flex h-screen items-center justify-center bg-slate-50">
+          <div className="p-6 bg-white rounded-xl shadow border border-red-100">
+            <h2 className="text-red-600 font-bold text-xl">Access Denied</h2>
+            <p className="text-slate-500 italic">API Status: {res.status}</p>
+          </div>
+        </div>
+      );
+    }
+
+    const cubes = await res.json();
 
     return (
-      <div className="h-full min-h-0 flex-1">
-        <CubeDashboard initialCubes={cubes} />
-      </div>
+      <CubeLayout
+        cubes={cubes}
+      />
     );
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unexpected error occurred';
-
     return (
-      <ErrorState
-        title="Failed to Load Data"
-        description={errorMessage}
-      />
+      <div className="p-10 text-red-500">
+        Backend server at :8090 is unreachable.
+      </div>
     );
   }
 }
