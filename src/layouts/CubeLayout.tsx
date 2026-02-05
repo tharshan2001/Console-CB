@@ -52,7 +52,7 @@ export default function CubeLayout({
   return (
     <div className="flex w-full gap-6 bg-slate-50">
       {/* Files panel */}
-      <div className="flex-1 flex flex-col p-10 overflow-hidden min-h-0">
+      <div className="flex-1 flex flex-col p-10 overflow-hidden h-190">
         <h2 className="text-3xl font-black text-slate-800 mb-8 sticky top-0 bg-slate-50 z-10">
           {selectedCube ? `Cube: ${selectedCube}` : "← Select a Cube Instance"}
         </h2>
